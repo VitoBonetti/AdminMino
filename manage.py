@@ -7,7 +7,7 @@ import sys
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'AdminMino.settings')
-    os.environ.setdefault("WEASYPRINT_DLL_DIRECTORIES", r"C:\Program Files\Gtk-Runtime\bin")
+    # os.environ.setdefault("WEASYPRINT_DLL_DIRECTORIES", r"C:\Program Files\Gtk-Runtime\bin")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
