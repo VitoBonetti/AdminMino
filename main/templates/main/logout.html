@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Logout {% endblock title %}
+{% block custom_script %}
+{% endblock custom_script %}
+{% block page_title %}
+    Log out
+{% endblock page_title %}
+{% block content %}
+    <div class="h2 text-center pt-4"> Logged Page</div>
+    <div class="text-center pt-4 pb-3">
+        <p>You have been successfully logged out. <a class="general_link" href="{% url 'login' %}">Login again</a>.</p>
+    </div>
+{% endblock content %}
+{% block custom_bottom_script %}{% endblock custom_bottom_script %}

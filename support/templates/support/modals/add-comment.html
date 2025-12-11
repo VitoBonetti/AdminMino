@@ -1,0 +1,25 @@
+<div class="modal fade" id="addCommentModal{{ ticket.id }}" tabindex="-1" aria-labelledby="addCommentModalLabel{{ ticket.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <div class="modal-title m-0 fw-bold text-light fs-5" id="addCommentModalLabel{{ ticket.id }}">Add Comment to <span style="font-style: italic;">"{{ ticket.title }}"</span></div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post"  novalidate class="needs-validation">
+                {% csrf_token %}
+                <input type="hidden" name="ticket_id" value="{{ ticket.id }}">
+                <input type="hidden" name="submit_comment" value="true">
+                <div class="modal-body bg-primary-subtle">
+                    <div class="mb-3">
+                        <label for="commentText{{ ticket.id }}" class="form-label">Comment</label>
+                        <textarea rows="5" style="resize: none" class="form-control form-control-sm border-dark" id="commentText{{ ticket.id }}" name="comment" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer bg-primary-subtle">
+                    <button type="submit" class="btn btn-success justify-content-center rounded fw-bold">Add Comment</button>
+                    <button type="button" class="btn btn-danger justify-content-center rounded fw-bold" data-bs-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

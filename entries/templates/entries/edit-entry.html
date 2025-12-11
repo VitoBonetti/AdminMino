@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %} Add/Edit Entries {% endblock title %}
+{% block custom_script %}
+    <script type="text/javascript">
+        var jq = jQuery.noConflict();
+    </script>
+    <script src="{% static 'js/entries/entriesLoading.js' %}"></script>
+{% endblock custom_script %}
+{% block page_title %}
+    Add/Edit Entries
+{% endblock page_title %}
+{% block content %}
+    <div class="container-fluid bg-light-subtle p-2 border-0">
+        <div class="row mt-2">
+            <div class="col-xl-12 col-md-12 mb-4">
+                <div class="card border-0 bg-primary-subtle py-2">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-primary">
+                        <div class="m-0 fw-bold text-light fs-3">Add/Edit Entries</div>
+                        <div class="dropdown no-arrow">
+                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuAddEntries"  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="text-decoration: none; color: white;">
+                                <i class="bi bi-three-dots-vertical text-secondary-400 fs-3"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuAddEntries">
+                                <div class="dropdown-header fw-bold border-bottom bg-dark-subtle mb-1 fs-5 text-dark"><i class="bi bi-gear-fill"></i> Action</div>
+                                <a class="dropdown-item item-dropdown-font fs-6" href="{% url 'entries' %}">View All Entries</a>
+                                <a class="dropdown-item item-dropdown-font fs-6" href="#">View Invoices</a>
+                                <a class="dropdown-item item-dropdown-font fs-6" href="#">View Commissions</a>
+                                <a class="dropdown-item item-dropdown-font fs-6" href="#">View Quotations</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <form enctype="multipart/form-data" class="container needs-validation" novalidate method="post" id="entry_form">
+                                {% csrf_token %}
+                                <div class="row p-1">
+                                    <div class="col-md-3">
+                                        <label for="{{ form.date.id_for_label }}" class="text-secondary fw-bold">Date</label>
+                                        {{ form.date|add_class:"form-control form-control border-dark rounded" }}
+                                        {% if form.date.errors %}
+                                            <div class="alert alert-danger">
+                                                {{ form.date.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="{{ form.company_id.id_for_label }}" class="text-secondary fw-bold">My Company</label>
+                                        <select id="id_company_id" name="company_id" class="form-select form-select border-dark rounded fw-bold" required>
+                                            <option value="">----------</option>
+                                            {% for company in companies %}
+                                                <option value="{{ company.id }}" {% if company.id == form.company_id.value %}selected{% endif %}>{{ company.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="{{ form.customer_id.id_for_label }}" class="text-secondary fw-bold">Customer</label>
+                                        <select id="id_customer_id" name="customer_id" class="form-select form-select border-dark rounded fw-bold">
+                                            <option value="">----------</option>
+                                            {% for customer in customers %}
+                                                <option value="{{ customer.id }}" {% if customer.id == form.customer_id.value %}selected{% endif %}>{{ customer.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="{{ form.supplier_id.id_for_label }}" class="text-secondary fw-bold">Supplier</label>
+                                        <select id="id_supplier_id" name="supplier_id" class="form-select form-select border-dark rounded fw-bold">
+                                            <option value="">----------</option>
+                                            {% for supplier in suppliers %}
+                                                <option value="{{ supplier.id }}" {% if supplier.id == form.supplier_id.value %}selected{% endif %}>{{ supplier.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row p-1">
+                                    <div class="col-md-1">
+                                    </div>
+                                    <div class="col-md-1 pt-4 mb-2 form-check form-switch">
+                                        {{ form.is_invoice|add_class:"form-check-input border-dark pt-2 mb-2 fs-4" }}
+                                        <label class="form-check-label text-secondary fw-bold pt-2" for="{{ form.is_invoice.id_for_label }}">Inv.</label>
+                                    </div>
+                                    <div class="col-md-1 pt-4 mb-2 form-check form-switch">
+                                        {{ form.is_commission|add_class:"form-check-input border-dark pt-2 mb-2 fs-4" }}
+                                        <label class="form-check-label text-secondary fw-bold pt-2" for="{{ form.is_commission.id_for_label }}">Com.</label>
+                                    </div>
+                                    <div class="col-md-1 pt-4 mb-2 form-check form-switch">
+                                        {{ form.is_quotation|add_class:"form-check-input border-dark pt-2 mb-2 fs-4" }}
+                                        <label class="form-check-label text-secondary fw-bold pt-2" for="{{ form.is_quotation.id_for_label }}">Quo.</label>
+                                    </div>
+                                    <div class="col-md-1 pt-4 mb-2 form-check form-switch">
+                                        {{ form.is_paid|add_class:"form-check-input border-dark pt-2 mb-2 fs-4" }}
+                                        <label class="form-check-label text-secondary fw-bold pt-2" for="{{ form.is_paid.id_for_label }}">Paid</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <label for="id_loading_address_id" class="text-secondary fw-bold">Loading Address</label>
+                                        <select id="id_loading_address_id" name="loading_address" class="form-select form-select border-dark rounded fw-bold">
+                                            <option value="">----------</option>
+                                            {% if loading_addresses %}
+                                                {% for address in loading_addresses %}
+                                                    <option value="{{ address.id }}" {% if object.loading_address_id == address.id %}selected{% endif %}>{{ address.address }}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row p-1 pb-3">
+                                    <div class="col-md-6">
+                                       <label for="{{ form.loading_info.id_for_label }}" class="text-secondary fw-bold">Loading Information</label>
+                                        <input type="text" class="form-control form-control border-dark" id="{{ form.loading_info.auto_id }}" name="{{ form.loading_info.html_name }}" value="{{ form.loading_info.value|default:'' }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="{{ form.notes.id_for.label }}" class="text-secondary fw-bold">Notes</label>
+                                        <input type="text" class="form-control form-control border-dark" id="{{ form.notes.auto_id }}" name="{{ form.notes.html_name }}" value="{{ form.notes.value|default:'' }}">
+                                    </div>
+                                </div>
+                                <div class="row p-1">
+                                    <div class="col fs-5 bg-primary text-light rounded p-2 fw-bold">
+                                        Add/Edit Pallets Cost
+                                    </div>
+                                </div>
+                                <div class="row p-1 pb-3">
+                                    <div class="col-md-1">
+                                        <label for="{{ form.pallets_quantity.id_for_label }}" class="text-secondary fw-bold">Pallet</label>
+                                        {{ form.pallets_quantity|add_class:"form-control form-control border-dark rounded" }}
+                                    </div>
+                                    <div class="col-md-1">
+                                        <label for="{{ form.pallets_price.id_for_label }}" class="text-secondary fw-bold">Price</label>
+                                        {{ form.pallets_price|add_class:"form-control form-control border-dark rounded" }}
+                                    </div>
+                                    <div class="col-md-10">
+                                        <label for="{{ form.pallets_notes.id_for.label }}" class="text-secondary fw-bold">Notes</label>
+                                        <input type="text" class="form-control form-control border-dark" id="{{ form.pallets_notes.auto_id }}" name="{{ form.pallets_notes.html_name }}" value="{{ form.pallets_notes.value|default:'' }}">
+                                    </div>
+                                </div>
+                                <div class="row p-1">
+                                    <div class="col fs-5 bg-primary text-light rounded p-2 fw-bold">
+                                        Add/Edit Transportation costs Italy - Netherlands
+                                    </div>
+                                </div>
+                                <div class="row p-1 pb-3">
+                                    <div class="col-md-2">
+                                        <label for="{{ form.transport_gross.id_for_label }}" class="text-secondary fw-bold">Gross (kg)</label>
+                                        {{ form.transport_gross|add_class:"form-control form-control border-dark rounded" }}
+                                        {% if form.transport_gross.errors %}
+                                            <div class="alert alert-danger">
+                                                {{ form.transport_gross.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-3">
+                                         <label for="{{ form.transport_price_for_ton.id_for_label }}" class="text-secondary fw-bold">Price per Ton (€)</label>
+                                        {{ form.transport_price_for_ton|add_class:"form-control form-control border-dark rounded" }}
+                                        {% if form.transport_price_for_ton.errors %}
+                                            <div class="alert alert-danger">
+                                                {{ form.transport_price_for_ton.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-2">
+                                         <label for="{{ form.transport_diesel_toeslag.id_for_label }}" class="text-secondary fw-bold">Diesel Toeslag (%)</label>
+                                        {{ form.transport_diesel_toeslag|add_class:"form-control form-control border-dark rounded" }}
+                                        {% if form.transport_diesel_toeslag.errors %}
+                                            <div class="alert alert-danger">
+                                                {{ form.transport_diesel_toeslag.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-2">
+                                         <label for="{{ form.transport_extra_stop.id_for_label }}" class="text-secondary fw-bold">Extra Stop(s)</label>
+                                        {{ form.transport_extra_stop|add_class:"form-control form-control border-dark rounded" }}
+                                        {% if form.transport_extra_stop.errors %}
+                                            <div class="alert alert-danger">
+                                                {{ form.transport_extra_stop.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-3">
+                                         <label for="{{ form.transport_extra_stop_cost.id_for_label }}" class="text-secondary fw-bold">Extra Stop(s) Price (€)</label>
+                                        {{ form.transport_extra_stop_cost|add_class:"form-control form-control border-dark rounded" }}
+                                        {% if form.transport_extra_stop_cost.errors %}
+                                            <div class="alert alert-danger">
+                                                {{ form.transport_extra_stop_cost.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row p-1">
+                                    <div class="col fs-5 bg-primary text-light rounded p-2 fw-bold">
+                                        Add/Edit Products
+                                    </div>
+                                </div>
+                                <div class="row p-1 pb-3">
+                                    <div class="col">
+                                        {% with named_formsets.products as formset %}
+                                            {{ formset.management_form }}
+                                            <script type="text/html" id="entries-template">
+                                                // id="inlineformsetname-template"
+                                                // id='inlineformsetname-__prefix__'
+                                                <tr id="entries-__prefix__" class= hide_all>
+                                                    {% for fields in formset.empty_form.hidden_fields %}
+                                                        {{ fields }}
+                                                    {% endfor %}
+                                                    {% for fields in formset.empty_form.visible_fields %}
+                                                        <td>{{fields}}</td>
+                                                    {% endfor %}
+                                                </tr>
+                                            </script>
+                                            <div class="table-responsive">
+                                                <table class="table table-sm table-striped border border-dark rounded">
+                                                    <thead>
+                                                        <tr class="table-info border border-dark rounded">
+                                                            <th scope="col">Product</th>
+                                                            <th scope="col">Description</th>
+                                                            <th scope="col">Quantity</th>
+                                                            <th scope="col">Unit</th>
+                                                            <th scope="col">Price per Unit</th>
+                                                            <th scope="col">Off %</th>
+{#                                                            <th scope="col">Total</th>#}
+                                                            <th scope="col">Delete</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="item-entries">
+                                                        {% for formss in formset %}
+                                                            {{ formss.management_form }}
+                                                            <tr id="entries-{{ forloop.counter0 }}" class= "hide_all border-dark rounded small-height">
+                                                                {{ formss.id }}
+                                                                {% for field in formss.visible_fields %}
+                                                                    <td class="align-middle">
+                                                                        {% if field.name == "entry_id" %}
+                                                                            {% if formss.instance.pk %}
+                                                                                {{ field.as_hidden }}
+                                                                            {% else %}
+                                                                                <input type="hidden" name="{{ field.html_name }}" value="{{ entry.id }}">
+                                                                            {% endif %}
+                                                                        {% else %}
+                                                                            {{ field }}
+                                                                        {% endif %}
+                                                                        {% comment %} {{ field.DELETE }} {% endcomment %}
+                                                                    </td>
+                                                                {% endfor %}
+                                                                {% comment %} for delete {% endcomment %}
+                                                                {% if formss.instance.pk %}
+                                                                {% endif %}
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                                <div class="col p-1 m-1 text-center">
+                                                    <div class="form-group">
+                                                        <span>
+                                                            <a href="#" id="add-entry-button" class="btn btn-primary rounded add-product fw-bold"><i class="bi bi-plus-square"></i> ADD</a>
+                                                            <button type="submit" class="btn btn-success rounded fw-bold"><i class="bi bi-floppy"></i> SAVE</button>
+                                                            <a href="{% url 'edit-entry' %}" class="btn btn-danger rounded clear-form-button fw-bold" title="Clear Form"><i class="bi bi-x-circle-fill"></i> RESET</a>
+                                                            <a href="{% url 'entries' %}" class="btn btn-warning rounded clear-form-button fw-bold" title="Back to Supplier Overview"><i class="bi bi-arrow-counterclockwise"></i> BACK</a>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endwith %}
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block custom_bottom_script %}
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function() {
+        // when user clicks add more btn of variants
+            $('.add-product').off().click(function(ev) {
+                console.log("Button clicked");
+                ev.preventDefault();
+                var count = $('#item-entries').children().length;
+                var tmplMarkup = $('#entries-template').html();
+                var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
+                $('#item-entries').append(compiledTmpl);
+
+                // update form count
+                console.log('Before increment: ', count);
+                console.log('TOTAL_FORMS value before: ', $('#id_entries-TOTAL_FORMS').val());
+                $('#id_products-TOTAL_FORMS').val(count+1);
+                console.log('After increment: ', $('#id_entries-TOTAL_FORMS').val());
+            });
+        });
+    </script>
+{% endblock custom_bottom_script %}

@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Customers {% endblock title %}
+{% block custom_script %}
+    <script src="{% static 'js/customers/customers.js' %}"></script>
+    <script src="{% static 'js/customers/searchCustomers.js' %}"></script>
+{% endblock custom_script %}
+{% block page_title %}
+    Customers
+{% endblock page_title %}
+{% block content %}
+    <div class="container-fluid bg-light-subtle p-2 border-0">
+        <div class="row">
+            <div class="col-xl-1 col-md-7 mt-2 text-secondary fw-bold small text-end">
+                Search:
+            </div>
+            <div class="col-xl-11 col-md-7 mb-4">
+                <input type="text" id="searchCustomer" class="form-control border-secondary" placeholder="Search customer...">
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-xl-12 col-md-12 mb-4">
+                <div class="card border-0 bg-success-subtle shadow py-2">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-success">
+                        <div class="m-0 fw-bold text-light fs-3">Customers</div>
+                        <div class="dropdown no-arrow">
+                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuCustomer"  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="text-decoration: none; color: white;">
+                                <i class="bi bi-three-dots-vertical text-secondary-400 fs-3"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuCustomer">
+                                <div class="dropdown-header fw-bold border-bottom bg-dark-subtle mb-1 fs-5 text-dark"><i class="bi bi-gear-fill"></i> Action</div>
+                                <a class="dropdown-item item-dropdown-font fs-6" data-bs-toggle="modal" data-bs-target="#customersModal">Add Customer</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            {% if customers %}
+                                <table class="table table-striped table-sm" id="customerTable">
+                                    <thead>
+                                        <tr class="table-dark">
+                                            <th scope="col">Name</th>
+                                            <th scope="col" class="text-center">Address</th>
+                                            <th scope="col" class="text-center">Email</th>
+                                            <th scope="col" class="text-center">Telephone</th>
+                                            <th scope="col" class="text-center">KvK</th>
+                                            <th scope="col" class="text-center">BTW</th>
+                                            <th scope="col" class="text-center">Bank Details</th>
+                                            <th scope="col" class="text-center">Active</th>
+                                            <th scope="col" class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="customerTableBody">
+                                        {% for customer in customers %}
+                                            <tr>
+                                                <td class="align-middle">{{ customer.name }}</td>
+                                                <td class="align-middle text-center">
+                                                    <a href="https://maps.google.com/?q={{ customer.address }}, {{ customer.postcode }} {{ customer.city }} - {{ customer.nation }}" class="table_link" target="_blank" title="Go to the Location">
+                                                         {{ customer.address }}, {{ customer.postcode }} {{ customer.city }} - {{ customer.nation }}
+                                                     </a>
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    <a href="mailto:{{ customer.email }}" class="table_link">
+                                                        {{ customer.email }}
+                                                    </a>
+                                                </td>
+                                                <td class="align-middle text-center">{{ customer.phone }}</td>
+                                                <td class="align-middle text-center">{{ customer.kvk }}</td>
+                                                <td class="align-middle text-center">{{ customer.btw }}</td>
+                                                <td class="align-middle text-center">{{ customer.bankaccountname }}: {{ customer.iban }}</td>
+                                                <td class="align-middle text-center">
+                                                    {% if customer.is_active %}
+                                                        <span class="text-success">True</span>
+                                                    {% else %}
+                                                        <span class="text-danger">False</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    <span>
+                                                        <a href="javascript:void(0)" class="edit-button" data-company-id="{{ customer.pk }}" title="Edit" data-bs-toggle="modal" data-bs-target="#customersModal"  style="text-decoration: none;">
+                                                            <i class="bi bi-pencil-square fw-bold link-success fs-4" title="Edit"></i>
+                                                        </a>
+                                                    </span>
+                                                    <span>
+                                                        <a class="delete-button" data-customer-id="{{ customer.pk }}" title="Delete">
+                                                            <i class="bi bi-trash fw-bold link-danger fs-4" title="Delete"></i>
+                                                        </a>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <div class="text-center text-secondary fw-bolder fs-2">
+                                    No Customers registered in the database. <i class="bi bi-emoji-frown-fill"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--MODAL CUSTOMER FORM START -->
+    {% include 'customers/modals/add-customer.html' %}
+    <!--MODAL CUSTOMER FORM END -->
+{% endblock content %}
+{% block custom_bottom_script %}
+    <script src="{% static 'js/customers/customersModal.js' %}"></script>
+{% endblock custom_bottom_script %}

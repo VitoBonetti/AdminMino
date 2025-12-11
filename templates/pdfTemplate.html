@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{%  endblock title %}</title>
+    <link rel="stylesheet" href="{% static 'css/pdf.css' %}">
+</head>
+<body>
+    <div>
+        <table class="full-width-table">
+            <tr>
+                <td class="top-cell">
+                    <a  href="{% url 'entry-detail-pdf' pk=entry.id %}" class="button-print" id="printExclude">Generate PDF</a>
+                    <button class="button-print" id="printExclude" onclick="window.close();">Close the Page</button>
+                </td>
+                <td class="logo-cell">
+                    <img src="{% static  'images/logo_horizontal.png'%}" class="right-aligned-logo">
+                </td>
+            </tr>
+        </table>
+        <table class="full-width-table">
+            <tr>
+                <td class="info-cell">
+                    <div class="supplier-customer-company-info">
+                        {% block supplierCustomerInformation %}{% endblock supplierCustomerInformation %}
+                    </div>
+                </td>
+                <td class="info-cell-company">
+                    <div class="supplier-customer-company-info">
+                        {% block companyInformation %}{% endblock companyInformation %}
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <table class="full-width-table">
+            <tr>
+                <td class="reference-cell">
+                    {% block reference %}{% endblock reference %}
+                </td>
+            </tr>
+            <tr>
+                <td class="reference-info-cell">
+                    {% block infoReference %}{% endblock infoReference %}
+                </td>
+            </tr>
+        </table>
+        <table class="full-width-table">
+            <tr>
+                <td class="loading-info-cell">
+                    {% block loadingInfo %}{% endblock loadingInfo %}
+                </td>
+            </tr>
+        </table>
+        <table class="table-product">
+            <thead>
+                <tr>
+                    <th class="product-cell-big td-product-border"><strong>Product</strong></th>
+                    {% block no_commission_th %}{% endblock no_commission_th %}
+                    <th class="product-cell-small-end td-product-border"><strong>Prijs</strong></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% block listOfProduct %}{% endblock listOfProduct %}
+            </tbody>
+        </table>
+        {% block transportInformation %}{% endblock transportInformation %}
+        {% block palletsInformation %}{% endblock palletsInformation %}
+        {% block totalCalculation %}{% endblock totalCalculation %}
+{#        <div class="page-break"></div>#}
+        {% block noteAlgemene %}{% endblock noteAlgemene %}
+    </div>
+    <div class="footer">{% block footer %}{% endblock footer %}</div>
+</body>
+</html>

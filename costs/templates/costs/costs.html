@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %}  Costs {% endblock title %}
+{% block custom_script %}
+    <script src="{% static 'js/costs/deleteCost.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            initCostForm('{{ form.category_id.auto_id }}', '{{ form.description_id.auto_id }}')
+
+        });
+    </script>
+    <script src="{% static 'js/costs/costs.js' %}"></script>
+    <script src="{% static 'js/costs/searchCost.js' %}"></script>
+{% endblock custom_script %}
+{% block page_title %}
+    Costs
+{% endblock page_title %}
+{% block content %}
+    <div class="container-fluid bg-light-subtle p-2 border-0">
+        <div class="row">
+            <div class="col-xl-8 col-lg-7">
+                <div class="card border-0 bg-primary-subtle shadow py-2">
+                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-primary">
+                        <div class="m-0 fw-bold text-light fs-3">Add Cost</div>
+                    </div>
+                    <div class="card-body align-center">
+                        <form method="post" action="{% url 'costs' %}" novalidate class="needs-validation">
+                            {% csrf_token %}
+                            {% if form.instance.pk %}
+                              <input type="hidden" name="id" value="{{ form.instance.pk }}">
+                            {% endif %}
+                            <div class="row p-1">
+                                <div class="col-md-5">
+                                    {% with form.category_id as field %}
+                                        <div class="form-group">
+                                            <label for="{{ field.auto_id }}" class="mt-2 text-muted fw-bold">{{ field.label }}</label>
+                                            <select name="{{ field.html_name }}" id="{{ field.auto_id }}" class="form-select border-secondary rounded text-muted fw-bold" required>
+                                                {% for choice in field.field.choices %}
+                                                    <option value="{{ choice.0 }}"  class="form-control border-secondary rounded text-muted fw-bold" {% if form.instance.category_id_id == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    {% endwith %}
+                                </div>
+                                <div class="col-md-5">
+                                    {% with form.description_id as field %}
+                                        <div class="form-group">
+                                            <label for="{{ field.auto_id }}" class="mt-2 text-muted fw-bold">{{ field.label }}</label>
+                                            <select name="{{ field.html_name }}" id="{{ field.auto_id }}" class="form-select border-dark rounded text-muted fw-bold" disabled required>
+                                                <option value="" class="form-control border-secondary rounded text-muted fw-bold">---------</option>
+                                                {% for choice in descriptions %}
+                                                    <option value="{{ choice.id }}" class="form-control border-secondary rounded text-muted fw-bold" {% if form.instance.description_id_id == choice.id %}selected{% endif %}>{{ choice.description }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    {% endwith %}
+                                </div>
+                            </div>
+                            <div class="row p-1">
+                                <div class="col-md-5">
+                                    <label for="{{ form.cost_date.id_for_label }}" class="text-muted fw-bold mt-2">Date</label>
+                                    {{ form.cost_date|add_class:"form-control border-secondary rounded" }}
+                                    {% if form.cost_date.errors %}
+                                        <div class="alert alert-danger">
+                                            {{ form.cost_date.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-5">
+                                    <label for="{{ form.euro_amount.id_for_label }}" class="text-muted fw-bold mt-2">Euro Amount</label>
+                                    {{ form.euro_amount|add_class:"form-control border-secondary rounded" }}</div>
+                                <div class="col-md-2">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="text-center"><label class="text-muted fw-bold mt-2" for="{{ form.is_credit.id_for_label }}">Is Credit</label></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                        </div>
+                                        <div class="col">
+                                            <div class="mt-2 form-check form-switch fs-3">{{ form.is_credit|add_class:"form-check-input border-secondary" }}</div>
+                                        </div>
+                                        <div class="col">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row p-1">
+                                <div class="col">
+                                    <label for="{{ form.cost_note.id_for_label }}" class="text-muted fw-bold mt-2">Cost Note</label>
+                                    {{ form.cost_note|add_class:"form-control border-secondary rounded" }}
+                                </div>
+                                <input type="hidden" name="category_id" value="{{ form.category_id.value }}">
+                                <input type="hidden" name="description_id" value="{{ form.description_id.value }}">
+                            </div>
+                            <div class="row p-1">
+                                <div class="col"></div>
+                                <div class="col mt-1 mb-1">
+                                    <span class="pe-1">
+                                        <button type="submit" class="btn btn-success rounded fw-bold border border-1 border-secondary" title="Save Form"><i class="bi bi-floppy"></i> SAVE</button>
+                                    </span>
+                                    <span class="ps-1">
+                                        <a href="{% url 'costs' %}" class="btn btn-danger rounded clear-form-button fw-bold border border-1 border-secondary" title="Clear Form"><i class="bi bi-x-circle-fill"></i> RESET</a>
+                                    </span>
+                                </div>
+                                <div class="col"></div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-5">
+                <div class="card border-0 bg-warning-subtle shadow py-2">
+                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-warning">
+                        <div class="m-0 fw-bold text-light fs-3">Costs Balance</div>
+                    </div>
+                    <div class="card-body align-center">
+                        <div class="row p-1">
+                            <div class="col-5 mt-2 fs-3">Income</div>
+                            <div class="col-7 mt-2 text-end fs-3 text-success fw-bold">{{ credit_sum }} €</div>
+                        </div>
+                        <div class="row p-1 mb-2 border-bottom border-dark">
+                            <div class="col-5 mt-2 fs-3">Outcome</div>
+                            <div class="col-7 mt-2 text-end fs-3 text-danger fw-bold">{{ debit_sum }} €</div>
+                        </div>
+                        <div class="row p-1 mb-2">
+                            <div class="col-5 mt-2 fs-3">Total</div>
+                            <div class="col-7 mt-2 text-end fs-3 {% if balace_sum <= 0 %}text-danger{%else%}text-success{%endif%} fw-bold">
+                                {%  if balace_sum < 0 %}
+                                    {{ balace_sum }} €
+                                {% else %}
+                                    {{ balace_sum }} €
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col-xl-12 col-lg-7">
+                <div class="card border-0 bg-success-subtle shadow py-2">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-success">
+                        <div class="m-0 fw-bold text-light fs-3">Cost Overview</div>
+                        <div class="dropdown no-arrow">
+                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuCost"  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="text-decoration: none; color: white;">
+                                <i class="bi bi-three-dots-vertical text-secondary-400 fs-3"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuCost">
+                                <div class="dropdown-header fw-bold border-bottom bg-dark-subtle mb-1 fs-5 text-dark"><i class="bi bi-gear-fill"></i> Action</div>
+                                <a class="dropdown-item item-dropdown-font fs-6" href="{% url 'categories' %}">View Categories</a>
+                                <a class="dropdown-item item-dropdown-font fs-6" href="{% url 'descriptions' %}">View Descriptions</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item item-dropdown-font fs-6 text-success" href="{% url 'export-costs-excel' %}">
+                                    <i class="bi bi-file-earmark-spreadsheet"></i> Export to Excel
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            {% if costs %}
+                                <table class="table table-striped table-sm">
+                                    <thead>
+                                        <tr class="table-dark">
+                                            <th scope="col"></th>
+                                            <th scope="col">Date</th>
+                                            <th scope="col">Category</th>
+                                            <th scope="col">Description</th>
+                                            <th scope="col">Amount €</th>
+                                            <th scope="col">Note</th>
+                                            <th scope="col" class="text-end">Action</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for cost in costs %}
+                                            <tr>
+                                                <td class="align-middle fw-bold">{{ cost.reference_id }}</td>
+                                                <td class="align-middle">{{ cost.cost_date|date:"d-M-Y" }}</td>
+                                                <td class="align-middle">{{ cost.category_id.category|capfirst|default_if_none:'N/A' }}</td>
+                                                <td class="align-middle">{{ cost.description_id.description|capfirst|default_if_none:'N/A' }}</td>
+                                                <td class="align-middle">
+                                                    {% if cost.is_credit %}
+                                                        <span class="text-success fw-bold">
+                                                            {{ cost.euro_amount }} <i class="bi bi-caret-up-fill"></i>
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="text-danger fw-bold">
+                                                            {{ cost.euro_amount }} <i class="bi bi-caret-down-fill"></i>
+                                                        </span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="align-middle">{{ cost.cost_note|default_if_none:'' }}</td>
+                                                <td class="align-middle text-end">
+                                                    <span class="ps-1">
+                                                        <a href="{% url 'costs' %}?id={{ cost.pk }}" title="Edit" style="text-decoration: none;">
+                                                            <i class="bi bi-pencil-square fw-bold link-success fs-4" title="Edit"></i>
+                                                        </a>
+                                                    </span>
+                                                    <span class="pe-1">
+                                                        <a href="{% url 'delete-cost' cost.id %}" class="delete-button" data-company-id="{{ cost.id }}" title="Delete">
+                                                            <i class="bi bi-trash fw-bold link-danger fs-4" title="Delete"></i>
+                                                        </a>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <div class="text-center text-secondary fw-bolder fs-2">
+                                    No Costs registered in the database. <i class="bi bi-emoji-frown-fill"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block custom_bottom_script %}
+{% endblock custom_bottom_script %}

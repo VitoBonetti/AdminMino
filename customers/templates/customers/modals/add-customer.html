@@ -1,0 +1,82 @@
+<div class="modal fade" id="customersModal" tabindex="-1" aria-labelledby="customersModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <div class="modal-title fs-3 fw-bold text-light" id="customersModalLabel">Add Customer</div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-primary-subtle">
+                <form method="post" action="{% url 'customers' %}" novalidate class="needs-validation">
+                    {% csrf_token %}
+                    <input type="hidden" name="id" id="customer_id" value="">
+                    <div class="row pt-1">
+                        <div class="col-4 p-4">
+                            <label for="{{ form.name.id_for_label }}" class="small text-muted fw-bold">Name:</label>
+                            <input type="text" class="form-control form-control-sm border-dark" id="{{ form.name.auto_id }}" name="{{ form.name.html_name }}" value="{{ form.name.value|default:'' }}" required>
+                        </div>
+                        <div class="col-5 p-4">
+                            <label for="{{ form.address.id_for_label }}" class="small text-muted fw-bold">Address:</label>
+                            <input type="text" class="form-control form-control-sm border-dark" id="{{ form.address.auto_id }}" name="{{ form.address.html_name }}" value="{{ form.address.value|default:'' }}">
+                        </div>
+                        <div class="col-3 p-4">
+                            <label for="{{ form.postcode.id_for_label }}" class="small text-muted fw-bold">Postcode:</label>
+                            <input type="text" class="form-control form-control-sm border-dark" id="{{ form.postcode.auto_id }}" name="{{ form.postcode.html_name }}" value="{{ form.postcode.value|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="row pt-1">
+                        <div class="col-5 p-4">
+                            <label for="{{ form.city.id_for_label }}" class="small text-secondary fw-bold">City:</label>
+                            <input type="text" class="form-control form-control-sm border-dark" id="{{ form.city.auto_id }}" name="{{ form.city.html_name }}" value="{{ form.city.value|default:'' }}">
+                        </div>
+                        <div class="col-5 p-4">
+                            <label for="{{ form.nation.id_for_label }}" class="small text-secondary fw-bold">Nation:</label>
+                            <input type="text" class="form-control form-control-sm border-dark" id="{{ form.nation.auto_id }}" name="{{ form.nation.html_name }}" value="{{ form.nation.value|default:'' }}">
+                        </div>
+                        <div class="col-2 p-4">
+                            <label for="{{ form.is_active.id_for_label }}" class="small text-secondary fw-bold">{{ form.is_active.label }}</label>
+                            <div class="form-check form-switch mt-2 ms-2 fs-4">
+                                <input type="checkbox" class="form-check-input" id="{{ form.is_active.auto_id }}" name="{{ form.is_active.html_name }}" {% if form.is_active.value %}checked{% endif %}>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row pt-1">
+                        <div class="col-6 p-4">
+                            <label for="{{ form.phone.id_for_label }}" class="small text-secondary fw-bold">Phone Number:</label>
+                            <input type="text" class="form-control form-control-sm border-dark" id="{{ form.phone.auto_id }}" name="{{ form.phone.html_name }}" value="{{ form.phone.value|default:'' }}">
+                        </div>
+                        <div class="col-6 p-4">
+                            <label for="{{ form.email.id_for_label }}" class="small text-secondary fw-bold">Email:</label>
+                            <input type="text" class="form-control form-control-sm border-dark" id="{{ form.email.auto_id }}" name="{{ form.email.html_name }}" value="{{ form.email.value|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="row pt-1">
+                        <div class="col-3 p-3">
+                            <label for="{{ form.btw.id_for_label }}" class="small text-secondary fw-bold">BTW Number:</label>
+                            <input type="text" class="form-control form-control-sm border-dark" id="{{ form.btw.auto_id }}" name="{{ form.btw.html_name }}" value="{{ form.btw.value|default:'' }}">
+                        </div>
+                        <div class="col-3 p-3">
+                            <label for="{{ form.kvk.id_for_label }}" class="small text-secondary fw-bold">KvK Number:</label>
+                            <input type="text" class="form-control form-control-sm border-dark" id="{{ form.kvk.auto_id }}" name="{{ form.kvk.html_name }}" value="{{ form.kvk.value|default:'' }}">
+                        </div>
+                        <div class="col-3 p-3">
+                            <label for="{{ form.bankaccountname.id_for_label }}" class="small text-secondary fw-bold">Account Name:</label>
+                            <input type="text" class="form-control form-control-sm border-dark" id="{{ form.bankaccountname.auto_id }}" name="{{ form.bankaccountname.html_name }}" value="{{ form.bankaccountname.value|default:'' }}">
+                        </div>
+                        <div class="col-3 p-3">
+                            <label for="{{ form.iban.id_for_label }}" class="small text-secondary fw-bold">IBAN:</label>
+                            <input type="text" class="form-control form-control-sm border-dark" id="{{ form.iban.auto_id }}" name="{{ form.iban.html_name }}" value="{{ form.iban.value|default:'' }}">
+                        </div>
+                    </div>
+                    <div class="row pt-3">
+                        <div class="col justify-content-end pe-1 text-end">
+                            <button type="submit" class="btn btn-success rounded fw-bold">Save</button>
+                        </div>
+                        <div class="col justify-content-start ps-1">
+                            <a href="{% url 'customers' %}" class="btn btn-danger rounded fw-bold" title="Clear Form">Reset</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

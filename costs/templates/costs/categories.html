@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %} Cost Categories {% endblock title %}
+{% block custom_script %}
+    <script src="{% static 'js/costs/categories.js' %}"></script>
+    <script src="{% static 'js/costs/categoriesAutocomplete.js' %}"></script>
+{% endblock custom_script %}
+{% block page_title %}
+    Cost Categories
+{% endblock page_title %}
+{% block content %}
+    <div class="container-fluid bg-light-subtle p-2 border-0">
+        <div class="row">
+            <div class="col ">
+                <div class="card shadow border-0 bg-primary-subtle shadow py-2 mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-primary">
+                        <div class="m-0 fw-bold text-light fs-3">Add Cost Category</div>
+                    </div>
+
+                    <div class="card-body align-center">
+                        <form method="post" action="{% url 'categories' %}" novalidate class="needs-validation">
+                            {% csrf_token %}
+                            {% if form_category.instance.pk %}
+                                <input type="hidden" name="id" value="{{ form_category.instance.pk }}">
+                            {% endif %}
+                            <div class="row justify-content-center mb-3">
+                                <div class="col-9">
+                                    <label for="{{ form_category.category.id_for_label }}" class="mt-2 text-secondary fw-bold">
+                                        {{ form_category.category.label }}
+                                    </label>
+                                    <input type="text" class="form-control border-secondary rounded category-input" id="{{ form_category.category.auto_id }}" name="{{form_category.category.html_name}}" value="{{form_category.category.value|default:''}}" required autocomplete="off">
+                                </div>
+                                <div class="col-3 mt-4 pt-2">
+                                    <button type="submit" class="btn btn-success rounded fw-bold">Save</button>
+                                    <button type="reset" class="btn btn-danger rounded fw-bold">Reset</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col">
+                <div class="card border-0 bg-success-subtle shadow py-2">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-success">
+                        <div class="m-0 fw-bold text-light fs-3">Categories</div>
+                        <div class="dropdown no-arrow">
+                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuCategories"  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="text-decoration: none; color: white;">
+                                <i class="bi bi-three-dots-vertical text-secondary-400 fs-3"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuCategories">
+                                <div class="dropdown-header fw-bold border-bottom bg-dark-subtle mb-1 fs-5 text-dark"><i class="bi bi-gear-fill"></i> Action</div>
+                                <a class="dropdown-item item-dropdown-font fs-6" href="{% url 'costs' %}">View Costs</a>
+                                <a class="dropdown-item item-dropdown-font fs-6" href="{% url 'descriptions' %}">View Descriptions</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            {% if  categories %}
+                                <table class="table table-striped table-sm">
+                                    <thead>
+                                        <tr class="table-dark">
+                                            <th scope="col">Categories</th>
+                                            <th scope="col" >Descriptions</th>
+                                            <th scope="col" class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for category in categories %}
+                                            <tr>
+                                                <td class="align-middle fw-bold">{{ category.category|capfirst }}</td>
+                                                <td class="align-middle">
+                                                    <ul>
+                                                        {% for description in category.descriptions.all %}
+                                                            <li>{{ description.description|capfirst }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </td>
+                                                <td class="align-middle text-end">
+                                                    <span class="ps-1">
+                                                        <a href="{% url 'categories' %}?id={{ category.pk }}" title="Edit" style="text-decoration: none;">
+                                                            <i class="bi bi-pencil-square fw-bold link-success fs-4" title="Edit"></i>
+                                                        </a>
+                                                    </span>
+                                                    <span class="pe-1">
+                                                        <a href="{% url 'delete-category' category.id %}" class="delete-button" data-company-id="{{ category.id }}" title="Delete">
+                                                            <i class="bi bi-trash fw-bold link-danger fs-4" title="Delete"></i>
+                                                        </a>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <div class="text-center text-secondary fw-bolder fs-2">
+                                    No Categories registered in the database. <i class="bi bi-emoji-frown-fill"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block custom_bottom_script %}
+{% endblock custom_bottom_script %}

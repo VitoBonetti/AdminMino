@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %} Cost Category's Description {% endblock title %}
+{% block custom_script %}
+    <script src="{% static 'js/costs/descriptions.js' %}"></script>
+    <script src="{% static 'js/costs/descriptionAutocomplete.js' %}"></script>
+{% endblock custom_script %}
+{% block page_title %}
+    Cost Category's Description
+{% endblock page_title %}
+{% block content %}
+    <div class="container-fluid bg-light-subtle p-2 border-0">
+        <div class="row">
+            <div class="col">
+                <div class="card shadow border-0 bg-primary-subtle shadow h-100 py-2 mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-primary">
+                        <div class="m-0 fw-bold text-light fs-3">Add Cost Category's Description</div>
+                    </div>
+                    <div class="card-body align-center">
+                        <form method="post" action="{% url 'descriptions' %}" novalidate class="needs-validation" id="description-form">
+                            {% csrf_token %}
+                            {% if form_description.instance.pk %}
+                                <input type="hidden" name="id" value="{{ form_description.instance.pk }}"  id="{{ form_description.instance.pk }}">
+                            {% endif %}
+                            <div class="row justify-content-center mb-3">
+                                <div class="col-md-5">
+                                    <label for="{{ form_description.categoryID.id_for_label }}" class=" text-muted fw-bold">
+                                        {{ form_description.categoryID.label }}:
+                                    </label>
+                                    {{ form_description.categoryID|add_class:'form-select border-secondary rounded fw-bold' }}
+                                </div>
+                                <div class="col-md-5">
+                                    <label for="{{ form_description.description.id_for_label }}" class=" text-muted fw-bold">
+                                        {{ form_description.description.label }}:
+                                    </label>
+                                    <input type="text" class="form-control border-secondary rounded " id="{{ form_description.description.auto_id }}" name="{{ form_description.description.html_name }}" required>
+                                </div>
+                                <div class="col-md-2 pt-4">
+                                    <button type="submit" class="btn btn-success rounded small-block fw-bold">Save</button>
+                                    <a href="{% url 'descriptions' %}" class="btn btn-danger rounded small-block fw-bold">Reset</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col">
+                <div class="card border-0 bg-success-subtle shadow h-100 py-2">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-success">
+                        <div class="m-0 fw-bold text-light fs-3">Descriptions</div>
+                        <div class="dropdown no-arrow">
+                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuDescription"  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="text-decoration: none; color: white;">
+                                <i class="bi bi-three-dots-vertical text-secondary-400 fs-3"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuDescription">
+                                <div class="dropdown-header fw-bold border-bottom bg-dark-subtle mb-1 fs-5 text-dark"><i class="bi bi-gear-fill"></i> Action</div>
+                                <a class="dropdown-item item-dropdown-font fs-6" href="{% url 'costs' %}">View Costs</a>
+                                <a class="dropdown-item item-dropdown-font fs-6" href="{% url 'categories' %}">View Categories</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            {% if descriptions %}
+                                <table class="table table-striped border border-1 border-dark"  id="description-table">
+                                    <thead>
+                                    <tr class="table-dark">
+                                        <th scope="col">Category</th>
+                                        <th scope="col">Descriptions</th>
+                                        <th class="text-end" scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for description in descriptions %}
+                                        <tr data-description-id="{{ description.id }}">
+                                            <td class="align-middle">{{ description.categoryID|capfirst }}</td>
+                                            <td class="align-middle fw-bold">{{ description.description|capfirst }}</td>
+                                            <td class="align-middle text-end">
+                                                <span class="ps-1">
+                                                    <a type="button" class="edit-button" data-description-id="{{ description.id }}" title="Edit" style="text-decoration: none;">
+                                                        <i class="bi bi-pencil-square fw-bold link-success fs-4" title="Edit"></i>
+                                                    </a>
+                                                </span>
+                                                <span class="pe-1">
+                                                    <a href="{% url 'delete-description' description.id %}" class="delete-button" data-description-id="{{ description.id }}" title="Delete">
+                                                        <i class="bi bi-trash fw-bold link-danger fs-4" title="Delete"></i>
+                                                    </a>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                </table>
+                            {% else %}
+                                <div class="text-center text-secondary fw-bolder fs-2">
+                                    No Descriptions registered in the database. <i class="bi bi-emoji-frown-fill"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block custom_bottom_script %}
+{% endblock custom_bottom_script %}

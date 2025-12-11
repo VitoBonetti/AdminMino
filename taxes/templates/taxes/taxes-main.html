@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Taxation</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Order Taxation</h1>
+
+    <label for="year-select">Select Year:</label>
+    <select id="year-select">
+        <option value="">--Select Year--</option>
+        {% for year in years %}
+            <option value="{{ year }}">{{ year }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="quarter-select">Select Quarter:</label>
+    <select id="quarter-select" disabled>
+        <option value="">--Select Quarter--</option>
+    </select>
+
+    <div id="tax-data">
+        <!-- Tax data will be displayed here -->
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            $('#year-select').change(function(){
+                var year = $(this).val();
+                if(year) {
+                    $.getJSON("{% url 'fetch_quarters' %}", {'year': year}, function(data){
+                        var quarterSelect = $('#quarter-select');
+                        quarterSelect.empty().append('<option value="">--Select Quarter--</option>');
+                        $.each(data, function(index, quarter){
+                            quarterSelect.append('<option value="'+quarter.quarter+'">'+quarter.name+'</option>');
+                        });
+                        quarterSelect.prop('disabled', false);
+                    });
+                } else {
+                    $('#quarter-select').prop('disabled', true).empty().append('<option value="">--Select Quarter--</option>');
+                    $('#tax-data').empty();
+                }
+            });
+
+            $('#quarter-select').change(function(){
+                var year = $('#year-select').val();
+                var quarter = $(this).val();
+                if(year && quarter) {
+                    $.getJSON("{% url 'fetch_tax_data' %}", {'year': year, 'quarter': quarter}, function(data){
+                        $('#tax-data').html(`
+                            <p>Total Entry: ${data.entry_data} €</p>
+                            <p>Real Costs: ${data.basic_cost} €</p>
+                            <p>Total ABNAmro Interest: ${data.bank_interest} €</p>
+                            <p>Total Salary: ${data.total_salary} €</p>
+                            <p>Total Tax: ${data.total_tax} €</p>
+                            <p>Real Costs - ABNAmro Interest: ${data.first_step} €</p>
+                            <p>Plus tax: ${data.second_step} €</p>
+                            <p>Tax: ${data.tax} €</p>
+                            <p>After Tax: ${data.after_tax} €</p>
+                            <p>Quarter Safe: ${data.quarter_safe} €</p>
+
+                        `);
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

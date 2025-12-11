@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %} Add/Edit Suppliers {% endblock title %}
+{% block custom_script %}
+{% endblock custom_script %}
+{% block page_title %}
+    Add/Edit Suppliers
+{% endblock page_title %}
+{% block content %}
+    <div class="container-fluid bg-light-subtle p-2 border-0">
+        <div class="row mt-2">
+            <div class="col-xl-12 col-md-12 mb-4">
+                <div class="card border-0 bg-primary-subtle py-2">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-primary">
+                        <div class="m-0 fw-bold text-light fs-3">Add/Edit Supplier</div>
+                        <div class="dropdown no-arrow">
+                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuCustomer"  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="text-decoration: none; color: white;">
+                                <i class="bi bi-three-dots-vertical text-secondary-400 fs-3"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuCustomer">
+                                <div class="dropdown-header fw-bold border-bottom bg-dark-subtle mb-1 fs-5 text-dark"><i class="bi bi-gear-fill"></i> Action</div>
+                                <a class="dropdown-item item-dropdown-font fs-6" href="{% url 'suppliers' %}">View Suppliers</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form enctype="multipart/form-data" class="container needs-validation" novalidate method="post" id="supplier_form">
+                            {% csrf_token %}
+                            <div class="row pt-1">
+                                <div class="col-4 p-3">
+                                    <label for="{{ form.name.id_for_label }}" class="small text-muted fw-bold">Name:</label>
+                                    <input type="text" class="form-control form-control border-dark" id="{{ form.name.auto_id }}" name="{{ form.name.html_name }}" value="{{ form.name.value|default:'' }}" required>
+                                </div>
+                                <div class="col-5 p-3">
+                                    <label for="{{ form.address.id_for_label }}" class="small text-muted fw-bold">Address:</label>
+                                    <input type="text" class="form-control form-control border-dark" id="{{ form.address.auto_id }}" name="{{ form.address.html_name }}" value="{{ form.address.value|default:'' }}">
+                                </div>
+                                <div class="col-3 p-3">
+                                    <label for="{{ form.postcode.id_for_label }}" class="small text-muted fw-bold">Postcode:</label>
+                                    <input type="text" class="form-control form-control border-dark" id="{{ form.postcode.auto_id }}" name="{{ form.postcode.html_name }}" value="{{ form.postcode.value|default:'' }}">
+                                </div>
+                            </div>
+                            <div class="row pt-1">
+                                <div class="col-5 p-3">
+                                    <label for="{{ form.city.id_for_label }}" class="small text-secondary fw-bold">City:</label>
+                                    <input type="text" class="form-control form-control border-dark" id="{{ form.city.auto_id }}" name="{{ form.city.html_name }}" value="{{ form.city.value|default:'' }}">
+                                </div>
+                                <div class="col-5 p-3">
+                                    <label for="{{ form.nation.id_for_label }}" class="small text-secondary fw-bold">Nation:</label>
+                                    <input type="text" class="form-control form-control border-dark" id="{{ form.nation.auto_id }}" name="{{ form.nation.html_name }}" value="{{ form.nation.value|default:'' }}">
+                                </div>
+                                <div class="col-2 p-3">
+                                    <label for="{{ form.is_active.id_for_label }}" class="small text-secondary fw-bold">{{ form.is_active.label }}</label>
+                                    <div class="form-check form-switch mt-2 ms-2 fs-4">
+                                        <input type="checkbox" class="form-check-input" id="{{ form.is_active.auto_id }}" name="{{ form.is_active.html_name }}" {% if form.is_active.value %}checked{% endif %}>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pt-1">
+                                <div class="col-6 p-3">
+                                    <label for="{{ form.phone.id_for_label }}" class="small text-secondary fw-bold">Phone Number:</label>
+                                    <input type="text" class="form-control form-control border-dark" id="{{ form.phone.auto_id }}" name="{{ form.phone.html_name }}" value="{{ form.phone.value|default:'' }}">
+                                </div>
+                                <div class="col-6 p-3">
+                                    <label for="{{ form.email.id_for_label }}" class="small text-secondary fw-bold">Email:</label>
+                                    <input type="text" class="form-control form-control border-dark" id="{{ form.email.auto_id }}" name="{{ form.email.html_name }}" value="{{ form.email.value|default:'' }}">
+                                </div>
+                            </div>
+                            <div class="row pt-1">
+                                <div class="col-3 p-3">
+                                    <label for="{{ form.btw.id_for_label }}" class="small text-secondary fw-bold">BTW Number:</label>
+                                    <input type="text" class="form-control form-control border-dark" id="{{ form.btw.auto_id }}" name="{{ form.btw.html_name }}" value="{{ form.btw.value|default:'' }}">
+                                </div>
+                                <div class="col-3 p-3">
+                                    <label for="{{ form.kvk.id_for_label }}" class="small text-secondary fw-bold">KvK Number:</label>
+                                    <input type="text" class="form-control form-control border-dark" id="{{ form.kvk.auto_id }}" name="{{ form.kvk.html_name }}" value="{{ form.kvk.value|default:'' }}">
+                                </div>
+                                <div class="col-3 p-3">
+                                    <label for="{{ form.bankaccountname.id_for_label }}" class="small text-secondary fw-bold">Account Name:</label>
+                                    <input type="text" class="form-control form-control border-dark" id="{{ form.bankaccountname.auto_id }}" name="{{ form.bankaccountname.html_name }}" value="{{ form.bankaccountname.value|default:'' }}">
+                                </div>
+                                <div class="col-3 p-3">
+                                    <label for="{{ form.iban.id_for_label }}" class="small text-secondary fw-bold">IBAN:</label>
+                                    <input type="text" class="form-control form-control border-dark" id="{{ form.iban.auto_id }}" name="{{ form.iban.html_name }}" value="{{ form.iban.value|default:'' }}">
+                                </div>
+                            </div>
+                            <div class="row p-1">
+                                <div class="p-3">
+                                    {% with named_formsets.addresses as formset %}
+                                        {{ formset.management_form }}
+                                        <script type="text/html" id="suppliers-template">  // id="inlineformsetname-template"
+                                            // id='inlineformsetname-__prefix__'
+                                            <tr id="suppliers-__prefix__" class= hide_all>
+                                                {% for fields in formset.empty_form.hidden_fields %}
+                                                    <td style="display: none;">{{ fields }}</td>
+                                                {% endfor %}
+
+                                                {% for fields in formset.empty_form.visible_fields %}
+                                                    <td>
+                                                        {{fields}}
+                                                    </td>
+                                                {% endfor %}
+                                            </tr>
+                                        </script>
+                                        <div class="table-responsive">
+                                            <div class="fs-5 fw-bold">
+                                                Add Loading Address
+                                            </div>
+                                            <table class="table border border-1 border-dark">
+                                                <thead>
+                                                    <tr class="table-dark">
+                                                        <th scope="col">Address</th>
+                                                        <th scope="col">PostCode</th>
+                                                        <th scope="col">City</th>
+                                                        <th scope="col">Nation</th>
+                                                        <th scope="col">Delete?</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="item-suppliers">  <!-- id="item-inlineformsetname" -->
+                                                    <!-- formset non forms errors -->
+                                                    {% for formss in formset %}
+                                                        {{ formss.management_form }}
+                                                        <tr id="suppliers-{{ forloop.counter0 }}" class= "hide_all">
+                                                            {{ formss.id }}
+                                                            {% for field in formss.visible_fields %}
+                                                                <td class="align-middle">
+                                                                    {% if field.name == "supplier_id" %}
+                                                                        {% if formss.instance.pk %}
+                                                                            {{ field.as_hidden }}
+                                                                        {% else %}
+                                                                            <input type="hidden" name="{{ field.html_name }}" value="{{ supplier.id }}">
+                                                                        {% endif %}
+                                                                    {% else %}
+                                                                        {{field}}
+                                                                    {% endif %}
+                                                                    {% comment %} {{ field.DELETE }} {% endcomment %}
+                                                                </td>
+                                                            {% endfor %}
+                                                            {% comment %} for delete {% endcomment %}
+        {#                                                    {% if formss.instance.pk %}#}
+        {##}
+        {#                                                    {% endif %}#}
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                            <div class="col p-1 m-1 text-center">
+                                                <!-- id="add-inlineformsetname-button" -->
+                                                <div class="form-group">
+                                                    <span>
+                                                        <a href="#" id="add-supplier-button" class="btn btn-primary rounded add-address fw-bold" title="Add New Address Line"><i class="bi bi-plus-square"></i> ADD</a>
+                                                        <button type="submit" class="btn btn-success rounded fw-bold" title="Save Form"><i class="bi bi-floppy"></i> SAVE</button>
+                                                        <a href="{% url 'edit-supplier' %}" class="btn btn-danger rounded clear-form-button fw-bold" title="Reset Form"><i class="bi bi-x-circle-fill"></i> RESET</a>
+                                                        <a href="{% url 'suppliers' %}" class="btn btn-warning rounded clear-form-button fw-bold" title="Back to Supplier Overview"><i class="bi bi-arrow-counterclockwise"></i> BACK</a>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endwith %}
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block custom_bottom_script %}
+    <script>
+
+      $(document).ready(function() {
+        // when user clicks add more btn of variants
+          $('.add-address').off().click(function(ev) {
+              ev.preventDefault();
+              var count = $('#item-suppliers').children().length;
+              var tmplMarkup = $('#suppliers-template').html();
+              var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
+              $('#item-suppliers').append(compiledTmpl);
+
+              // update form count
+              $('#id_addresses-TOTAL_FORMS').val(count+1);
+          });
+      });
+    </script>
+{% endblock custom_bottom_script %}

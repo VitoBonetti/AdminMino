@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} All Entries {% endblock title %}
+{% block custom_script %}
+    <script src="{% static 'js/entries/entries.js' %}"></script>
+{% endblock custom_script %}
+{% block page_title %}
+    All entries
+{% endblock page_title %}
+{% block content %}
+    <div class="container-fluid bg-light-subtle p-2 border-0">
+        <div class="row m-1 rounded bg-success-subtle py-2">
+            <div class="col-auto text-end mb-1 text-end"><a class="table_link text-dark h6 rounded" style="padding: 2px;" href="{% url 'edit-entry' %}"><i class="bi bi-plus-circle"></i> Add Entry</a></div>
+            <div class="col-auto text-end mb-1 text-end"><a class="table_link text-dark h6 rounded" style="padding: 2px;" href="{% url 'invoices' %}"><i class="bi bi-file-earmark"></i> Invoices</a></div>
+            <div class="col-auto text-end mb-1 text-end"><a class="table_link text-dark h6 rounded" style="padding: 2px;" href="{% url 'commissions' %}"><i class="bi bi-file-break"></i> Commissions</a></div>
+            <div class="col-auto text-end mb-1 text-end"><a class="table_link text-dark h6 rounded" style="padding: 2px;" href="{% url 'quotations' %}"><i class="bi bi-file-earmark-break"></i> Quotations</a></div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-xl-12 col-md-12 mb-4">
+                <div class="card border-0 bg-success-subtle py-2">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-success">
+                        <div class="m-0 fw-bold text-light fs-3">Entries</div>
+                        <div class="dropdown no-arrow">
+                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuEntries"  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="text-decoration: none; color: white;">
+                                <i class="bi bi-three-dots-vertical text-secondary-400 fs-3"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuEntries">
+                                <div class="dropdown-header fw-bold border-bottom bg-dark-subtle mb-1 fs-5 text-dark"><i class="bi bi-gear-fill"></i> Action</div>
+                                <a class="dropdown-item item-dropdown-font fs-6" href="{% url 'edit-entry' %}">Add Entry</a>
+                                <a class="dropdown-item item-dropdown-font fs-6" href="{% url 'invoices' %}">View Invoices</a>
+                                <a class="dropdown-item item-dropdown-font fs-6" href="{% url 'commissions' %}">View Commissions</a>
+                                <a class="dropdown-item item-dropdown-font fs-6" href="{% url 'quotations' %}">View Quotations</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            {% if entries %}
+                                <table class="table table-striped table-sm">
+                                    <thead>
+                                        <tr class="table-dark">
+                                            <th scope="col"></th>
+                                            <th scope="col" class="text-center"></th>
+                                            <th scope="col" class="text-center"></th>
+                                            <th scope="col" class="text-center">Customer/Supplier</th>
+                                            <th scope="col" class="text-center">Date</th>
+                                            <th scope="col" class="text-center">Overdue Date</th>
+                                            <th scope="col" class="text-center">Tot excl. BTW</th>
+                                            <th scope="col" class="text-center">Tot</th>
+                                            <th scope="col" class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for entry in entries %}
+                                            <tr>
+                                                <td class="align-middle">
+                                                   {% if entry.is_commission %}
+                                                        <span class="badge bg-success rounded-pill border border-success fs-6 p-1" title="Commission">&nbsp;C&nbsp;</span>
+                                                    {% elif entry.is_quotation and not entry.is_invoice %}
+                                                        <span class="badge bg-success rounded-pill border border-success fs-6 p-1" title="Quotation">&nbsp;Q&nbsp;</span>
+                                                    {% else %}
+                                                        <span class="badge bg-success rounded-pill border border-success fs-6 p-1" title="Invoice">&nbsp;I&nbsp;</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    {% if entry.invoice_reference %}
+                                                        <a href="{% url 'entry-detail' entry.id %}" class="table_link detail-link fw-bold text-dark p-1">{{ entry.invoice_reference|default_if_none:'' }}</a>
+                                                        {% if entry.is_paid %}
+                                                            <span class="bi bi-check-circle-fill text-success" style="font-size: 16px;" title="Paid"></span>
+                                                        {% elif entry.overdue_date < today %}
+                                                            <span class="bi bi-exclamation-circle-fill text-danger" style="font-size: 16px;" title="Overdue"></span>
+                                                        {% else %}
+                                                            <span class="bi bi-record-circle-fill text-primary" style="font-size: 16px; visibility: hidden;" title="Open"></span>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    {% if entry.quotation_reference %}
+                                                        <a href="{% url 'entry-detail' entry.id %}" class="table_link detail-link fw-bold text-dark p-1">{{ entry.quotation_reference|default_if_none:'' }}</a>
+                                                        {% if entry.is_paid %}
+                                                            <span class="bi bi-check-circle-fill text-success" style="font-size: 16px;" title="Paid"></span>
+                                                        {% elif entry.overdue_date < today %}
+                                                            <span class="bi bi-exclamation-circle-fill text-danger" style="font-size: 16px;" title="Overdue"></span>
+                                                        {% else %}
+                                                            <span class="bi bi-record-circle-fill text-primary" style="font-size: 16px; visibility: hidden;" title="Open"></span>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    {% if entry.is_invoice or entry.is_quotation %}
+                                                        {{ entry.customer_id }}
+                                                    {% else %}
+                                                        {{ entry.supplier_id }}
+                                                    {% endif %}
+                                                </td>
+                                                <td class="align-middle text-center">{{ entry.date|date:"d M y" }}</td>
+                                                <td class="align-middle text-center">{{ entry.overdue_date|date:"d M y" }}</td>
+                                                <td class="align-middle text-center">
+                                                    {% if entry.is_commission %}
+                                                        {{ entry.temp_no_btw_total }}  &euro;
+                                                    {% else %}
+                                                        <span data-bs-toggle="popover" data-bs-html="true"  title="Total NO BTW Details"
+                                                              data-bs-content="Total Products: {{ entry.no_btw_total }} €<br>Transport Cost: {{ entry.transport_total_no_btw }} €<br>">
+                                                            {{ entry.temp_no_btw_total }}  &euro;
+                                                        </span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    {% if entry.is_commission %}
+                                                        {{ entry.final_total }} &euro;
+                                                    {% else %}
+                                                        <span data-bs-toggle="popover" data-bs-html="true" title="Total with BTW Details"
+                                                              data-bs-content="Total Products: {{ entry.btw_total }} €<br>Discount: {{ entry.discount }} %<br>
+                                                              Total with Discount: {{ entry.btw_total_discount }} €<br>Transport Cost: {{ entry.transport_total_btw }} €<br>Pallets Cost: {{ entry.pallets_total_price }} €">
+                                                            {{ entry.final_total }}  &euro;
+                                                        </span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="align-middle text-end">
+                                                    {% if entry.is_quotation and not entry.is_invoice %}
+                                                         <a href="{% url 'delete-entry' entry.id %}" class="delete-button" title="Delete"  data-company-id="{{ entry.id }}" style="text-decoration: none;">
+                                                             <i class="bi bi-trash fw-bold link-danger fs-3" title="Delete"></i>
+                                                         </a>
+                                                    {% endif %}
+                                                    <a href="{% url 'update-entry' entry.id %}" title="Edit" style="text-decoration: none;">
+                                                        <i class="bi bi-pencil-square fw-bold link-success fs-3" title="Edit"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <div class="text-center text-secondary fw-bolder fs-2">
+                                    No Entries registered in the database. <i class="bi bi-emoji-frown-fill"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block custom_bottom_script %}
+    <script src="{% static 'js/entries/entriesPopover.js' %}"></script>
+    <script src="{% static 'js/entries/entriesDetailsPopup.js' %}"></script>
+    <script src="{% static 'js/entries/entriesSelectBox.js' %}"></script>
+{% endblock custom_bottom_script %}

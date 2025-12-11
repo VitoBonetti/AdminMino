@@ -1,0 +1,24 @@
+<div class="modal fade" id="viewCommentsModal{{ ticket.id }}" tabindex="-1" aria-labelledby="viewCommentsModalLabel{{ ticket.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewCommentsModalLabel{{ ticket.id }}">Comments for {{ ticket.title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% for comment in ticket.ticket_comment.all %}
+                    <div class="comment">
+                        <p>{{ comment.comment }}</p>
+                        <p><small>By {{ comment.user.username }} on {{ comment.created_at }}</small></p>
+                    </div>
+                        <hr>
+                        {% empty %}
+                        <p>No comments found.</p>
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

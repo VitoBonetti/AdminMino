@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Login {% endblock title %}
+{% block custom_script %}
+{% endblock custom_script %}
+{% block page_title %}
+Log in
+{% endblock page_title %}
+{% block content %}
+    <div class="h2 text-center pt-4"> Authentication Page</div>
+    <div class="text-center pt-4 pb-3">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Login</button>
+        </form>
+    </div>
+{% endblock content %}
+{% block custom_bottom_script %}{% endblock custom_bottom_script %}

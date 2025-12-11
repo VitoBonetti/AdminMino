@@ -1,0 +1,257 @@
+{% extends 'pdfTemplate.html' %}
+{% block title %}
+    {% if entry.is_quotation and not entry.is_invoice %}
+        Quotation {{ entry.quotation_reference }}
+    {% else %}
+        Invoice {{ entry.invoice_reference }}
+    {%  endif %}
+{%  endblock title %}
+{% block supplierCustomerInformation %}
+    {% if entry.is_commission %}
+        <div><strong>{{ entry.supplier_id.name|default_if_none:'&nbsp;' }}</strong></div>
+        <div>{{ entry.supplier_id.address }}</div>
+        <div>{{ entry.supplier_id.postcode }}, {{ entry.supplier_id.city|upper }} - {{ entry.supplier_id.nation }}</div>
+        <div>{{ entry.supplier_id.email|default_if_none:'&nbsp;' }}</div>
+        <div>{{ entry.supplier_id.phone|default_if_none:'&nbsp;' }}</div>
+        <div>&nbsp;</div>
+        <div><strong>BTW/VAT/P.IVA</strong> {{ entry.supplier_id.btw }}</div>
+        <div><strong>KvK/C. Fiscale</strong> {{ entry.supplier_id.kvk }}</div>
+        <div>&nbsp;</div>
+    {% else %}
+        <div><strong>{{ entry.customer_id.name|default_if_none:'&nbsp;' }}</strong></div>
+        <div>{{ entry.customer_id.address }}</div>
+        <div>{{ entry.customer_id.postcode }}, {{ entry.customer_id.city|upper }} - {{ entry.customer_id.nation }}</div>
+        <div>{{ entry.customer_id.email|default_if_none:'&nbsp;' }}</div>
+        <div>{{ entry.customer_id.phone|default_if_none:'&nbsp;' }}</div>
+        <div>&nbsp;</div>
+        <div><strong>BTW/VAT/P.IVA</strong> {{ entry.customer_id.btw }}</div>
+        <div><strong>KvK/C. Fiscale</strong> {{ entry.customer_id.kvk }}</div>
+        <div>&nbsp;</div>
+    {% endif %}
+{% endblock supplierCustomerInformation %}
+{% block companyInformation %}
+    <div>&nbsp;</div>
+    <div>{{ entry.company_id.address }}</div>
+    <div>{{ entry.company_id.postcode }}, {{ entry.company_id.city|upper }} - {{ entry.company_id.nation }}</div>
+    <div>{{ entry.company_id.email }}</div>
+    <div>{{ entry.company_id.telephone }}</div>
+    <div>&nbsp;</div>
+    <div>BTW: {{ entry.company_id.btw }}</div>
+    <div>KvK: {{ entry.company_id.kvk }}</div>
+    <div>IBAN: {{ entry.company_id.iban }}</div>
+{% endblock companyInformation %}
+{% block reference %}
+    {% if entry.is_quotation and not entry.is_invoice %}
+        <div>OFFERTE: {{ entry.quotation_reference }}</div>
+    {% else %}
+        <div>INVOICE: {{ entry.invoice_reference }}</div>
+    {% endif %}
+{% endblock reference %}
+{% block infoReference %}
+    <div>Referentiedatum:  {{ entry.date|date:"d-M-Y" }}</div>
+    <div>Vervaldatum: {{ entry.overdue_date|date:"d-M-Y" }}</div>
+    {% if entry.is_invoice %}
+        {% if entry.quotation_reference %}
+            <div><strong>Referentienummer: {{ entry.quotation_reference }}</strong></div>
+        {% endif %}
+    {% endif %}
+{% endblock infoReference %}
+{% block loadingInfo %}
+    <div>&nbsp;</div>
+    {% if not entry.is_commission %}
+        {% if entry.loading_info %}
+            <div><strong>Loading Information: </strong> {{ entry.loading_info }}</div>
+        {% endif %}
+        {% if entry.loading_address %}
+            <div><strong>Loading Address: </strong> {{ entry.loading_address.address }}, {{ entry.loading_address.postcode }} {{ entry.loading_address.city }} - {{ entry.loading_address.nation }}</div>
+
+        {% endif %}
+    {% endif %}
+{% endblock loadingInfo %}
+{% block no_commission_th %}
+    {%  if not entry.is_commission %}
+        <th class="product-cell-small td-product-border"><strong>Hoeveelheid</strong></th>
+        <th class="product-cell-small td-product-border"><strong>Prijs per unit</strong></th>
+        <th class="product-cell-x-small td-product-border"><strong>Korting</strong></th>
+    {% endif %}
+{% endblock no_commission_th %}
+{% block listOfProduct %}
+    {% for product in products %}
+        <tr>
+            <td class="product-cell-big"><div class="fw-bold">{{ product.name }}</div><div class="fst-italic">{{ product.description }}</div>  </td>
+            {% if not entry.is_commission %}
+                <td class="product-cell-small">{{ product.quantity }} <span class="quantity-symbol">{{ product.unity }}</span></td>
+                <td class="product-cell-small">{{ product.unity_price }} <span class="quantity-symbol">€</span></td>
+                <td class="product-x-cell-small">
+                    {% if product.discount > 0 %}
+                        {{ product.discount }} %
+                    {% endif %}
+                </td>
+            {% endif %}
+            <td class="product-cell-small-end">{{ product.total }} <span class="quantity-symbol">€</span></td>
+        </tr>
+    {% endfor %}
+{% endblock listOfProduct %}
+{% block transportInformation %}
+    {% if not entry.is_commission %}
+        {% if transport and transport.transport_total_no_btw > 0 %}
+            <table class="transport-pallets-title-table">
+                <tr>
+                    <td class="transport-pallets-title-cell">
+                        Wegvervoerkosten Italië - Nederland
+                    </td>
+                </tr>
+            </table>
+            <table class="table-transport">
+                <thead>
+                    <tr>
+                        <th class="transport-cell-start">Gross</th>
+                        <th class="transport-cell">Bereken</th>
+                        <th class="transport-cell">Prijs <span class="quantity-symbol">(ton)</span></th>
+                        <th class="transport-cell">Dieseltoeslag</th>
+                        <th class="transport-cell">Stop<span class="quantity-symbol">(s)</span></th>
+                        <th class="transport-cell">Stop Prijs</th>
+                        <th class="transport-cell-end">Prijs <span class="quantity-symbol">(no BTW)</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="transport-cell-start">{{ transport.transport_gross }} <span class="quantity-symbol">KG</span></td>
+                        <td class="transport-cell">{{ transport.transport_bereken }} <span class="quantity-symbol">KG</span></td>
+                        <td class="transport-cell">{{ transport.transport_price_for_ton }} <span class="quantity-symbol">€</span></td>
+                        <td class="transport-cell">{{ transport.transport_diesel_toeslag }} <span class="quantity-symbol">%</span></td>
+                        <td class="transport-cell">{{ transport.transport_extra_stop }}</td>
+                        <td class="transport-cell">{{ transport.transport_extra_stop_cost }} <span class="quantity-symbol">€</span></td>
+                        <td class="transport-cell-end">{{ transport.transport_total_no_btw }} <span class="quantity-symbol">€</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        {% endif %}
+    {% endif %}
+{% endblock transportInformation %}
+{% block palletsInformation %}
+    {% if not entry.is_commission %}
+        {% if entry.pallets_notes %}
+            <table class="transport-pallets-title-table">
+                <tr>
+                    <td class="transport-pallets-title-cell">
+                        Pallet kosten
+                    </td>
+                </tr>
+            </table>
+            <table class="table-pallets">
+                <thead>
+                    <tr>
+                        <th class="pallet-cell-start">Quantity</th>
+                        <th class="pallet-cell">Prijs <span class="quantity-symbol">(Unit)</span> </th>
+                        <th class="pallet-cell-big">Note</th>
+                        <th class="pallet-cell-end">Prijs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="pallet-cell-start">{{ entry.pallets_quantity }}</td>
+                        <td class="pallet-cell">{{ entry.pallets_price }} <span class="quantity-symbol">€</span></td>
+                        <td class="pallet-cell-big">{{ entry.pallets_notes|default_if_none:'' }}</td>
+                        <td class="pallet-cell-end">{{ entry.pallets_total_price }} <span class="quantity-symbol">€</span></td>
+                    </tr>
+
+                </tbody>
+            </table>
+        {% endif %}
+    {% endif %}
+{% endblock palletsInformation %}
+{% block totalCalculation %}
+    <table class="table-total">
+        {% if not entry.is_commission %}
+            <tr>
+                <td class="total-cell-big">Totale productkosten zonder BTW: </td>
+                <td class="total-cell">{{ entry.no_btw_total }} <span class="quantity-symbol">€</span></td>
+            </tr>
+            {% if entry.transport_total_no_btw > 0 %}
+            <tr>
+                <td class="total-cell-big">Totale Wegvervoerskosten zonder BTW: </td>
+                <td class="total-cell">+ {{ entry.transport_total_no_btw }} <span class="quantity-symbol">€</span></td>
+            </tr>
+            {% endif %}
+            {% if entry.pallets_total_price > 0 %}
+                <tr>
+                    <td class="total-cell-big">Pallet kosten zonder BTW: </td>
+                    <td class="total-cell">+ {{ entry.pallets_total_price }} <span class="quantity-symbol">€</span></td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td class="total-cell-big">BTW 21%: </td>
+                <td class="total-cell" style="border-bottom: thin solid black">+ {{ btw_calc }} <span class="quantity-symbol">€</span></td>
+            </tr>
+{#            <tr>#}
+{#                <td class="total-cell-big">Totale productkosten met BTW: </td>#}
+{#                <td class="total-cell">{{ entry.btw_total }} <span class="quantity-symbol">€</span></td>#}
+{#            </tr>#}
+{#            {% if entry.discount > 0 %}#}
+{#                <tr>#}
+{#                    <td class="total-cell-big">Korting {{ entry.discount }}<span class="quantity-symbol">%</span>: </td>#}
+{#                    <td class="total-cell">- {{ total_discount }} <span class="quantity-symbol">€</span></td>#}
+{#                </tr>#}
+{#            {% endif %}#}
+{#            {% if entry.transport_total_btw > 0 %}#}
+{#                <tr>#}
+{#                    <td class="total-cell-big">Wegvervoerskosten met BTW: </td>#}
+{#                    <td class="total-cell">+ {{ entry.transport_total_btw }} <span class="quantity-symbol">€</span></td>#}
+{#                </tr>#}
+{#            {% endif %}#}
+{#            {% if entry.pallets_total_price > 0 %}#}
+{#                <tr>#}
+{#                    <td class="total-cell-big">Pallet kosten: </td>#}
+{#                    <td class="total-cell">+ {{ entry.pallets_total_price }} <span class="quantity-symbol">€</span></td>#}
+{#                </tr>#}
+{#            {% endif %}#}
+            <tr>
+                <td class="total-last-cell-big">Totaal: </td>
+                <td class="total-last-cell">{{entry.final_total}} €</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td class="total-last-cell-big">Totaal: </td>
+                <td class="total-last-cell" >{{entry.final_total}} €</td>
+            </tr>
+        {% endif %}
+    </table>
+{% endblock totalCalculation %}
+{% block noteAlgemene %}
+{#    {% if entry.notes %}#}
+{#        <table class="note-table">#}
+{#            <tr>#}
+{#                <td class="note-title-cell">#}
+{#                    Notes#}
+{#                </td>#}
+{#            </tr>#}
+{#            <tr>#}
+{#                <td class="note-cell">{{ entry.notes }}</td>#}
+{#            </tr>#}
+{#        </table>#}
+{#    {%  endif %}#}
+{#        <table class="note-table">#}
+{#            <tr>#}
+{#                <td class="note-title-cell">#}
+{#                    Algemene#}
+{#                </td>#}
+{#            </tr>#}
+{#            <tr>#}
+{#                <td class="note-cell">#}
+{#                    {% if entry.is_commission %}#}
+{#                        {{ algemene.algemene_commission|safe }}#}
+{#                    {% elif entry.is_quotation and not entry.is_invoice %}#}
+{#                        {{ algemene.algemene_offerte|safe }}#}
+{#                    {% else %}#}
+{#                        {{ algemene.algemene_invoice|safe }}#}
+{#                    {% endif %}#}
+{#                </td>#}
+{#            </tr>#}
+{#        </table>#}
+{% endblock noteAlgemene %}
+{% block footer %}
+    {% if entry.is_invoice or entry.is_commission %}
+        {{ algemene.footer_text|safe }}
+    {% endif %}
+{% endblock footer %}

@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Support {% endblock title %}
+{% block custom_script %}
+    <script src="{% static 'js/support/deleteTicket.js' %}"></script>
+{% endblock custom_script %}
+{% block page_title %}
+    Support
+{% endblock page_title %}
+{% block content %}
+    <div class="container-fluid bg-light-subtle p-2 border-0">
+        <div class="row">
+            <div class="col-xl-8 col-lg-7">
+                <div class="card border-0 bg-success-subtle shadow py-2">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-success">
+                        <div class="m-0 fw-bold text-light fs-3">Tickets</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            {% if tickets %}
+                                {%  for ticket in tickets %}
+                                   <div class="bg-success bg-opacity-25 rounded mt-2">
+                                        <span class="fs-3 text-dark text-opacity-75 ps-2 fw-bold">{{ ticket.title }}</span>
+                                        <div class="fs-6 text-dark text-opacity-75 ps-2">{{ ticket.subject|capfirst }}</div>
+                                        <div class="small text-dark text-opacity-75 pe-2 text-end">
+                                            Created at <span class="fw-bold">{{ ticket.created_at|date:"d M Y" }}</span>  by <span class="fw-bold">{{ ticket.user|capfirst }}</span> |
+                                            <a href="#" class="text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#viewCommentsModal{{ ticket.id }}">
+                                                Comments(<span class="fw-bold">{{ ticket.ticket_comment.count }}</span>)</a> | <a href="#" class="text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#addCommentModal{{ ticket.id }}">Add Comment</a>
+                                        </div>
+                                        <div class=" text-dark text-opacity-75 ps-2 pt-2 pb-2">
+                                            {{ ticket.description|safe }}
+                                        </div>
+                                        <div class="small text-dark text-opacity-75 pe-2 pt-2 pb-2 text-end">
+                                            {% if ticket.status == "open" %}
+                                                Status: <i class="bi bi-opencollective text-danger"></i> | Priority:
+                                                {% if ticket.priority == "low" %}
+                                                    <span class="text-primary fw-bold">Low</span>
+                                                {% elif ticket.priority == "medium" %}
+                                                     <span class="text-warming fw-bold">Medium</span>
+                                                {% elif ticket.priority == "high" %}
+                                                    <span class="text-danger fw-bold">High</span>
+                                                {% else %}
+                                                    <span class="text-dark fw-bold">Critical</span>
+                                                {% endif %} | <a href="#" class="text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#editTicketModal{{ ticket.id }}">Manage Ticket</a>
+                                            {% else %}
+                                                Status: <i class="bi bi-check-circle-fill text-success"></i>
+                                            {% endif %}
+                                        </div>
+                                   </div>
+                                    <!--MODAL VIEW COMMENTS START -->
+                                    {% include 'support/modals/comments.html' %}
+                                    <!--MODAL VIEW COMMENTS END -->
+                                    <!--MODAL ADD COMMENT START -->
+                                    {% include 'support/modals/add-comment.html' %}
+                                    <!--MODAL ADD COMMENT END -->
+                                    <!--MODAL EDIT TICKET START -->
+                                    {% include 'support/modals/edit-ticket.html' %}
+                                    <!--MODAL EDIT TICKET END -->
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-center text-secondary fw-bolder fs-2">
+                                    No Tickets registered in the database. <i class="bi bi-emoji-frown-fill"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-5">
+                <div class="card border-0 bg-primary-subtle shadow py-2">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-primary">
+                        <div class="m-0 fw-bold text-light fs-3">Add Ticket</div>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" novalidate class="needs-validation">
+                            {% csrf_token %}
+                            <input type="hidden" name="submit_ticket" value="true">
+                            <div class="form-group">
+                                <label for="{{ ticket_form.title.id_for_label }}" class="small text-muted fw-bold">Title</label>
+                                <input type="text" class="form-control form-control-sm border-dark" id="{{ ticket_form.title.auto_id }}" name="{{ ticket_form.title.html_name }}" value="{{ ticket_form.title.value|default:'' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ ticket_form.subject.id_for_label }}" class="small text-muted fw-bold">Subject</label>
+                                <input type="text" class="form-control form-control-sm border-dark" id="{{ ticket_form.subject.auto_id }}" name="{{ ticket_form.subject.html_name }}" value="{{ ticket_form.subject.value|default:'' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ ticket_form.description.id_for_label }}" class="small text-muted fw-bold">Description</label>
+                                <textarea rows="5" style="resize: none" class="form-control form-control-sm border-dark" id="{{ ticket_form.description.auto_id }}" name="{{ ticket_form.description.html_name }}">{{ ticket_form.description.value|default:'' }}</textarea>
+                            </div>
+                            
+                            <div class="row pt-3">
+                                <div class="col justify-content-end pe-1 text-end">
+                                    <button type="submit" class="btn btn-success rounded fw-bold">Save</button>
+                                </div>
+                                <div class="col justify-content-start ps-1">
+                                    <button type="reset" class="btn btn-danger rounded fw-bold" title="Clear Form">Reset</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block custom_bottom_script %}
+{% endblock custom_bottom_script %}
