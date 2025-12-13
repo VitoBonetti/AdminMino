@@ -1,0 +1,6 @@
+DB_NAME=adminmino_db
+DB_USER=adminmino_user
+DB_PASSWORD=
+DB_HOST=localhost
+DB_PORT=5432
+SECRET_KEY=django-insecure-a!+m*g+aqx#oki(z#^*jy1yi!#n2&930z+g#wt00b!@m9ktedp
