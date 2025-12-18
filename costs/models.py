@@ -41,6 +41,11 @@ class CostModel(models.Model):
     euro_amount = models.DecimalField(max_digits=10, decimal_places=2)
     is_credit = models.BooleanField(default=False)
     cost_note = models.CharField(max_length=250, blank=True, null=True)
+    supplier = models.CharField(blank=True, null=True)
+    invoice_nmb = models.CharField(blank=True, null=True)
+    ai_summary = models.CharField(blank=True, null=True)
+    quarter_reference = models.CharField(blank=True, null=True)
+    file_name = models.CharField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
         with transaction.atomic():
