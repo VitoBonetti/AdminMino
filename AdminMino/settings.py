@@ -30,8 +30,10 @@ SECRET_KEY = get_env_variable('SECRET_KEY', 'unsafe-default-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
-
+ALLOWED_HOSTS = ['admin.bundor.nl']
+CSRF_TRUSTED_ORIGINS = ["https://admin.bundor.nl",]
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
 
 # Application definition
 
